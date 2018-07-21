@@ -1,33 +1,37 @@
 const router = require('express').Router();
-const data = require('../db').pages;
+const collection = require('../db').Page;
 
 router.route('/pages')
     .get((req,res)=>{
-      res.json(data);
+        collection.find({}, {_id:0}, (err, data)=> {
+            res.json(data);
+        });
   });
 
 router.route('/pages/:id')
     .get((req,res)=>{
-        const id = parseInt(req.params.id);
-        const page = data.find(p => p.id === id);
+        console.log(collection);
+        const id = req.params.id;
+        const page = collection.find({id});
+        console.log(page);
         res.json(page);
-    })
+        })
     .put((req,res)=>{
         const id = parseInt(req.params.id);
-        const index = data.findIndex(post => post.id === id);
+        const index = collection.findIndex(post => post.id === id);
         const item = {
             id,
             title: req.body.title,
             body: req.body.body
         };
-        (index === -1) ? data.push(item) : data[index] = item;
+        (index === -1) ? collection.push(item) : collection[index] = item;
         res.json(item);
     })
     .delete((req, res)=> {
         const id = parseInt(req.params.id);
-        const index = data.findIndex(post => post.id === id);
+        const index = collection.findIndex(post => post.id === id);
         if (index !== -1) {
-            data.slice(index, 1);
+            collection.slice(index, 1);
         }
         res.send(200)
     });

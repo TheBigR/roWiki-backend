@@ -9,12 +9,12 @@ db.once('open', function() {
 
 const PageSchema = mongoose.Schema({
    id: Number,
-   title: String,
-   body: String
+   title: {type: String, required: true},
+   body: {type: String, required: true}
 });
 
 const Page = mongoose.model('Page', PageSchema);
 
 module.exports = {
-    Page
+Page
 };
