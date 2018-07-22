@@ -9,12 +9,19 @@ router.route('/pages')
   });
 
 router.route('/pages/:id')
-    .get((req,res)=>{
-        console.log(collection);
-        const id = req.params.id;
-        const page = collection.find({id});
-        console.log(page);
-        res.json(page);
+    .get((req,res, next)=>{
+        const id = Object.assign({}, req.params);
+        console.log(id);
+        collection.findOne(id, (err, page) => {
+            if (err) {
+                console.log(err);
+                next(err);
+            }
+            // No Page Found
+            if (0 === page.length) next(new Error('No Page Found!'));
+            console.log('Get part: ', page);
+            res.json(page);
+        });
         })
     .put((req,res)=>{
         const id = parseInt(req.params.id);

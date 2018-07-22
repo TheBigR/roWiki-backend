@@ -17,6 +17,9 @@ app.get('/error', (req, res) => {
     res.sendFile(path.join(__dirname, 'public/error.html'));
 });
 
+app.all('/test', (req, res) => {
+    throw new Error()
+});
 
 app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, 'public/index.html'));
