@@ -8,7 +8,7 @@ db.once('open', function() {
 });
 
 const PageSchema = mongoose.Schema({
-   id: Number,
+   id: String,
    title: {type: String, required: true},
    body: {type: String, required: true}
 });

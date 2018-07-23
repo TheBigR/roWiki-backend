@@ -11,7 +11,6 @@ router.route('/pages')
 router.route('/pages/:id')
     .get((req,res, next)=>{
         const id = Object.assign({}, req.params);
-        console.log(id);
         collection.findOne(id, (err, page) => {
             if (err) {
                 console.log(err);
@@ -34,13 +33,19 @@ router.route('/pages/:id')
         (index === -1) ? collection.push(item) : collection[index] = item;
         res.json(item);
     })
-    .delete((req, res)=> {
-        const id = parseInt(req.params.id);
-        const index = collection.findIndex(post => post.id === id);
-        if (index !== -1) {
-            collection.slice(index, 1);
-        }
-        res.send(200)
+    .delete((req, res, next )=> {
+        console.log('Del: ', req.body);
+        console.log('Del: params: ', req.params);
+        const id = Object.assign({}, req.params);
+
+        collection.findOneAndDelete(id, (err, page) => {
+            if (err) {
+                console.log(err);
+                next(err);
+            }
+            console.log('Deleted page: ', page);
+            res.sendStatus(201);
+        });
     });
 
 module.exports = router;
