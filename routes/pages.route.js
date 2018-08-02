@@ -1,27 +1,43 @@
 const router = require('express').Router();
 const collection = require('../db').Page;
+const mongoose = require('mongoose');
 
 router.route('/pages')
     .get((req,res)=>{
         collection.find({}, {_id:0}, (err, data)=> {
             res.json(data);
         });
-  });
+  })
+    .post((req,res,next) => {
+        const page = new collection({
+            _id: new mongoose.Types.ObjectId(),
+            title: req.body.title,
+            body: req.body.body
+        });
+        page.save().then( result => {
+            console.log(result);
+        })
+            .catch(err => console.log(err));
+        res.status(201).json({
+            message: 'Handling POST requests to /pages',
+            CreatedPage: page
+        });
+    });
 
 router.route('/pages/:id')
     .get((req,res, next)=>{
-        const id = Object.assign({}, req.params);
-        collection.findOne(id, (err, page) => {
-            if (err) {
+        const id = req.params.id;
+        collection.findById(id)
+            .exec()
+            .then( doc => {
+            console.log(doc);
+            res.status(200).json(doc);
+            })
+            .catch(err => {
                 console.log(err);
-                next(err);
-            }
-            // No Page Found
-            if (0 === page.length) next(new Error('No Page Found!'));
-            console.log('Get part: ', page);
-            res.json(page);
-        });
-        })
+                res.status(500).json({error: err});
+            });
+    })
     .put((req,res)=>{
         const id = parseInt(req.params.id);
         const index = collection.findIndex(post => post.id === id);
