@@ -4,7 +4,7 @@ const mongoose = require('mongoose');
 
 router.route('/pages')
     .get((req,res)=>{
-        collection.find({}, {_id:0}, (err, data)=> {
+        collection.find({},  (err, data)=> {
             res.json(data);
         });
   })
