@@ -4,9 +4,16 @@ const mongoose = require('mongoose');
 
 router.route('/pages')
     .get((req,res)=>{
-        collection.find({},  (err, data)=> {
-            res.json(data);
-        });
+        collection.find()
+            .exec()
+            .then(docs => {
+                console.log(docs);
+                res.status(200).json(docs);
+            })
+            .catch(err => {
+                console.log(err);
+                res.status(500).json({error: err});
+            });
   })
     .post((req,res,next) => {
         const page = new collection({
@@ -47,29 +54,33 @@ router.route('/pages/:id')
             });
     })
     .put((req,res)=>{
-        const id = parseInt(req.params.id);
-        const index = collection.findIndex(post => post.id === id);
-        const item = {
-            id,
-            title: req.body.title,
-            body: req.body.body
-        };
-        (index === -1) ? collection.push(item) : collection[index] = item;
-        res.json(item);
+        const id = req.params.id;
+        const updateOps = {};
+        for (const ops of req.body){
+            updateOps[ops.propName] = ops.value;
+        }
+        collection.update({_id: id}, {$set: updateOps })
+            .exec()
+            .then(result => {
+                console.log(result);
+                res.status(200).json(result);
+            })
+            .catch(err => {
+                console.log(err);
+                res.status(500).json({error: err});
+            });
     })
     .delete((req, res, next )=> {
-        console.log('Del: ', req.body);
-        console.log('Del: params: ', req.params);
-        const id = Object.assign({}, req.params);
-
-        collection.findOneAndDelete(id, (err, page) => {
-            if (err) {
+        const id = req.params.id;
+        collection.remove({_id: id})
+            .exec()
+            .then(result => {
+                res.status(200).json(result);
+            })
+            .catch(err => {
                 console.log(err);
-                next(err);
-            }
-            console.log('Deleted page: ', page);
-            res.sendStatus(201);
-        });
+                res.status(500).json({error: err});
+            });
     });
 
 module.exports = router;
