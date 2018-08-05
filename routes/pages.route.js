@@ -28,7 +28,7 @@ router.route('/pages')
                 res.status(500).json({error: err});
             });
     })
-    .post((req,res,next) => {
+    .post((req,res) => {
         const page = new collection({
             _id: new mongoose.Types.ObjectId(),
             title: req.body.title,
@@ -49,7 +49,7 @@ router.route('/pages')
     });
 
 router.route('/pages/:id')
-    .get((req,res, next)=>{
+    .get((req,res)=>{
         const id = req.params.id;
         collection.findById(id)
             .exec()
@@ -67,7 +67,7 @@ router.route('/pages/:id')
             });
     })
 
-    .delete((req, res, next )=> {
+    .delete((req, res)=> {
         const id = req.params.id;
         collection.remove({_id: id})
             .exec()
